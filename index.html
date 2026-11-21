@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeadReply Agent — live demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ef; --ink:#14171a; --muted:#5d646b; --line:#e3dfd6; --card:#fff;
+  --brand:#0f7b5f; --brand-2:#e8f4ef; --accent:#ff6a3d; --chat:#efeae2;
+  --me:#d9fdd3; --shadow:0 20px 50px -20px rgba(20,23,26,.25);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+header{padding:22px 0;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:800;letter-spacing:-.02em;font-size:18px;display:flex;gap:8px;align-items:center}
+.logo i{width:26px;height:26px;border-radius:8px;background:var(--brand);display:inline-grid;place-items:center;color:#fff;font-style:normal;font-size:14px}
+.pill{font-size:13px;font-weight:600;background:#fff;border:1px solid var(--line);padding:6px 12px;border-radius:99px}
+.pill b{color:var(--accent)}
+.hero{padding:34px 0 26px;text-align:center}
+.hero h1{font-family:"Instrument Serif",serif;font-weight:400;font-size:clamp(38px,6vw,68px);line-height:1.02;letter-spacing:-.01em}
+.hero h1 em{color:var(--brand)}
+.hero p{max-width:640px;margin:18px auto 0;color:var(--muted);font-size:17px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:26px 0 8px}
+.chip{border:1px solid var(--line);background:#fff;padding:9px 14px;border-radius:99px;font:600 14px Inter;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--ink)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hint{font-size:13px;color:var(--muted);text-align:center}
+.demo{display:grid;grid-template-columns:380px 1fr;gap:28px;margin:26px 0 60px;align-items:start}
+@media(max-width:900px){.demo{grid-template-columns:1fr}}
+.phone{background:#111;border-radius:38px;padding:10px;box-shadow:var(--shadow);max-width:380px;margin:0 auto;width:100%}
+.screen{border-radius:30px;overflow:hidden;background:var(--chat);display:flex;flex-direction:column;height:640px}
+.bar{background:#075e54;color:#fff;padding:14px 16px;display:flex;gap:10px;align-items:center}
+.av{width:36px;height:36px;border-radius:50%;background:#fff3;display:grid;place-items:center;font-weight:700}
+.bar small{display:block;opacity:.8;font-size:12px}
+.msgs{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:6px}
+.m{max-width:82%;padding:7px 10px 6px;border-radius:10px;font-size:14px;background:#fff;align-self:flex-start;box-shadow:0 1px 0 rgba(0,0,0,.08);white-space:pre-line;animation:pop .2s ease}
+.m.me{background:var(--me);align-self:flex-end}
+.m time{display:block;text-align:right;font-size:10.5px;color:#667;margin-top:2px}
+.m.sys{align-self:center;background:#fff8c5;font-size:12px;color:#5a5200}
+.typing{align-self:flex-start;background:#fff;border-radius:10px;padding:10px 14px;display:flex;gap:4px}
+.typing span{width:6px;height:6px;border-radius:50%;background:#999;animation:b 1s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-4px);opacity:1}}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+.replies{background:#f0f0f0;padding:10px;display:flex;flex-direction:column;gap:6px;min-height:64px}
+.replies .lbl{font-size:11px;color:#777;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.rbtn{background:#fff;border:1px solid #dcdcdc;border-radius:18px;padding:8px 12px;font:500 13.5px Inter;text-align:left;cursor:pointer}
+.rbtn:hover{border-color:#075e54;color:#075e54}
+.restart{background:#075e54;color:#fff;border:0;border-radius:18px;padding:9px 12px;font:600 13.5px Inter;cursor:pointer}
+.side{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px}
+.card h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;display:flex;justify-content:space-between}
+.timer{font-variant-numeric:tabular-nums;color:var(--brand);font-weight:700;text-transform:none;letter-spacing:0}
+.fields{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:500px){.fields{grid-template-columns:1fr}}
+.f{background:#faf9f6;border:1px dashed var(--line);border-radius:12px;padding:10px 12px;transition:.3s}
+.f.set{background:var(--brand-2);border:1px solid #bfe3d4}
+.f span{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.f div{font-weight:600;min-height:22px}
+.score{display:flex;align-items:center;gap:10px;margin-top:12px}
+.meter{flex:1;height:8px;background:#eee;border-radius:9px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f5b642,var(--brand));transition:width .6s}
+.fu{list-style:none;display:flex;flex-direction:column;gap:8px}
+.fu li{display:flex;gap:10px;font-size:14px;align-items:flex-start;opacity:.35;transition:.4s}
+.fu li.on{opacity:1}
+.fu b{min-width:62px;font-size:12px;background:#f2efe8;border-radius:6px;padding:2px 6px;text-align:center}
+.owner{background:#14171a;color:#e9e9e9;border-radius:14px;padding:14px;font-size:14px;white-space:pre-line;min-height:60px}
+.owner.empty{color:#888}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:60px}
+@media(max-width:800px){.how{grid-template-columns:1fr}}
+.how .card p{color:var(--muted);font-size:15px}
+.how .n{font-family:"Instrument Serif",serif;font-size:40px;color:var(--brand);line-height:1}
+.how h4{font-size:17px;margin:6px 0}
+.pilot{background:var(--ink);color:#fff;border-radius:26px;padding:40px;display:grid;grid-template-columns:1.2fr 1fr;gap:32px;margin-bottom:40px}
+@media(max-width:800px){.pilot{grid-template-columns:1fr;padding:26px}}
+.pilot h2{font-family:"Instrument Serif",serif;font-weight:400;font-size:44px;line-height:1.05}
+.pilot ul{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:10px;color:#cfd3d6}
+.pilot li::before{content:"✓ ";color:#5fd3a7;font-weight:700}
+.price{background:#1f2326;border-radius:18px;padding:24px}
+.price .big{font-size:38px;font-weight:800;letter-spacing:-.02em}
+.price .big small{font-size:15px;font-weight:500;color:#aab}
+.price hr{border:0;border-top:1px solid #333;margin:16px 0}
+.slots{display:flex;gap:6px;margin:8px 0 4px}
+.slots i{width:30px;height:10px;border-radius:4px;background:#5fd3a7}
+.cta{display:block;text-align:center;background:#25d366;color:#08311c;font-weight:700;padding:14px;border-radius:14px;text-decoration:none;margin-top:16px}
+.upi{display:flex;gap:8px;margin-top:10px;align-items:center;background:#2a2f33;border-radius:12px;padding:10px 12px;font-size:14px}
+.upi code{flex:1;font-family:ui-monospace,monospace;color:#fff}
+.upi button{background:#fff;border:0;border-radius:8px;padding:6px 10px;font:600 12px Inter;cursor:pointer}
+.fine{font-size:12.5px;color:#9aa2a8;margin-top:10px}
+footer{padding:20px 0 50px;color:var(--muted);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><i>⚡</i>LeadReply Agent</div>
+    <div class="pill">Pilot: <b>5 slots</b> this month</div>
+  </header>
+
+  <section class="hero">
+    <h1>Every lead answered in <em>30 seconds</em>,<br>even at 11pm.</h1>
+    <p>An AI agent that replies to your WhatsApp, Instagram and Facebook enquiries in English, Hindi or Gujarati. It asks the right questions, sends your catalogue, books the visit and follows up until the lead says yes or no.</p>
+    <div class="chips" id="chips"></div>
+    <div class="hint">Pick your business, then play the customer on the phone below.</div>
+  </section>
+
+  <section class="demo">
+    <div class="phone"><div class="screen">
+      <div class="bar"><div class="av" id="avatar">S</div><div><b id="bizname">Studio Aangan Interiors</b><small id="status">online · AI assistant</small></div></div>
+      <div class="msgs" id="msgs"></div>
+      <div class="replies" id="replies"></div>
+    </div></div>
+
+    <div class="side">
+      <div class="card">
+        <h3>What you see: the lead card <span class="timer" id="timer">replied in —</span></h3>
+        <div class="fields" id="fields"></div>
+        <div class="score"><b style="font-size:13px">Lead score</b><div class="meter"><i id="meter"></i></div><b id="scoreTxt">0</b></div>
+      </div>
+      <div class="card">
+        <h3>Automatic follow-ups</h3>
+        <ul class="fu" id="fu"></ul>
+      </div>
+      <div class="card">
+        <h3>Your 9pm WhatsApp summary</h3>
+        <div class="owner empty" id="owner">Finish the chat to see the summary the owner receives.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how">
+    <div class="card"><div class="n">1</div><h4>We learn your business</h4><p>A 30-minute call. Your catalogue, prices, FAQs, service areas, and when to hand a chat over to you.</p></div>
+    <div class="card"><div class="n">2</div><h4>Agent goes live</h4><p>Connected to your WhatsApp Business number and Meta inbox within 14 days. You approve its replies in the first week.</p></div>
+    <div class="card"><div class="n">3</div><h4>You only talk to buyers</h4><p>Hot leads come to you with name, need, budget and a booked slot. Every lead is logged in a Google Sheet you own.</p></div>
+  </section>
+
+  <section class="pilot">
+    <div>
+      <h2>Pilot programme: 5 businesses this month</h2>
+      <ul>
+        <li>Replies on WhatsApp, Instagram and Facebook DMs, 24/7</li>
+        <li>English, Hindi and Gujarati</li>
+        <li>Qualifies leads, sends catalogue or price list, books visits and calls</li>
+        <li>7-day follow-up on every lead that goes quiet</li>
+        <li>Google Sheet of every lead, plus a daily summary on your WhatsApp</li>
+        <li>Built and supported by Margil Patel, Ahmedabad</li>
+      </ul>
+    </div>
+    <div class="price">
+      <div style="font-size:13px;color:#aab">Setup</div>
+      <div class="big">₹14,999 <small>one-time</small></div>
+      <div style="font-size:13px;color:#aab;margin-top:8px">Then</div>
+      <div class="big" style="font-size:28px">₹4,999 <small>/ month</small></div>
+      <hr>
+      <div style="font-weight:700">Book a slot with a ₹5,000 deposit</div>
+      <div class="slots"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="fine" style="margin-top:4px">Deposit counts toward setup. Full refund if your agent isn't live within 14 days.</div>
+      <a class="cta" href="https://wa.me/916359160274?text=Hi%20Margil%2C%20I%20saw%20the%20LeadReply%20demo%20and%20want%20a%20pilot%20slot." target="_blank" rel="noopener">Book on WhatsApp: +91 63591 60274</a>
+      <div class="upi"><span>UPI</span><code id="upi">margilpatel57@okaxis</code><button id="copy">Copy</button></div>
+      <div class="fine">Pay the deposit by UPI, then send the screenshot on WhatsApp to confirm your slot.</div>
+    </div>
+  </section>
+
+  <footer>LeadReply Agent · Margil Patel, Ahmedabad · This page is a live demo. Business names in the chat are examples.</footer>
+</div>
+
+<script>
+const V = {
+  interior:{label:"Interior designer",biz:"Studio Aangan Interiors",av:"S",
+    fields:["Name","Property","Scope","Budget","Timeline","Next step"],
+    steps:[
+      {agent:"Hi! 👋 Thanks for messaging Studio Aangan. I'm the studio's assistant and can help right away. What are you planning?",
+       opts:[["Full interiors for a new 3BHK flat",{Property:"3BHK flat (new)",Scope:"Full home interiors"},25],
+             ["Just modular kitchen + wardrobes",{Property:"Apartment",Scope:"Kitchen + wardrobes"},18],
+             ["Office interiors, around 1500 sq ft",{Property:"Office, 1500 sq ft",Scope:"Commercial fit-out"},22]]},
+      {agent:"Lovely. May I know your name and which area the property is in? We handle projects across Ahmedabad and Gandhinagar.",
+       opts:[["I'm Riya, it's in Shela",{Name:"Riya · Shela"},12],["Amit here, Gota",{Name:"Amit · Gota"},12]]},
+      {agent:"Thanks! To suggest the right package, what budget range are you comfortable with? Our full-home projects usually start around ₹8 lakh, and kitchen + wardrobes around ₹3.5 lakh.",
+       opts:[["₹8–12 lakh",{Budget:"₹8–12 L"},22],["Around ₹4–5 lakh",{Budget:"₹4–5 L"},16],["Not sure yet, want to see options",{Budget:"Undecided"},6]]},
+      {agent:"Perfect. When do you need it ready? I'll also send our portfolio of similar projects. 📎",
+       opts:[["Possession next month, want to start soon",{Timeline:"Start within 30 days"},22],["In 3–4 months",{Timeline:"3–4 months"},10]]},
+      {agent:"Here's our portfolio: 12 recent homes and kitchens 📎 Studio_Aangan_Portfolio.pdf\n\nOur designer can visit the site for free. Does Saturday 11am or Sunday 4pm work?",
+       opts:[["Saturday 11am works",{"Next step":"Site visit · Sat 11am"},20],["Can you call me first?",{"Next step":"Call request · today"},14]]},
+      {agent:"Done ✅ I've booked it and shared the details with our designer, who will confirm by tonight. Anything else I can help with meanwhile?",final:true}
+    ]},
+  realestate:{label:"Real estate agent",biz:"Shree Homes Realty",av:"R",
+    fields:["Name","Looking for","Location","Budget","Timeline","Next step"],
+    steps:[
+      {agent:"Namaste 🙏 Thanks for your enquiry with Shree Homes. Are you looking to buy, rent or sell?",
+       opts:[["Buy a 2BHK or 3BHK",{"Looking for":"Buy · 2/3BHK"},22],["Rent a 2BHK",{"Looking for":"Rent · 2BHK"},12]]},
+      {agent:"Great. Which areas are you considering? We have verified listings across SG Highway, Bopal, South Bopal and Science City.",
+       opts:[["South Bopal or Bopal",{Location:"Bopal / S. Bopal"},12],["Near Science City",{Location:"Science City"},12]]},
+      {agent:"Noted. And what budget range should I search in?",
+       opts:[["₹70–90 lakh",{Budget:"₹70–90 L"},22],["₹50–60 lakh",{Budget:"₹50–60 L"},18],["Just exploring",{Budget:"Exploring"},4]]},
+      {agent:"Thanks. May I have your name? And are you planning to move in the next 3 months, or later?",
+       opts:[["Neha. Within 2 months, home loan approved",{Name:"Neha",Timeline:"≤ 2 months · loan approved"},26],["Karan, maybe 6 months",{Name:"Karan",Timeline:"~6 months"},8]]},
+      {agent:"Here are 4 matching options with photos and floor plans 📎\n\nI can arrange site visits for 2 of them together. Is tomorrow 5pm or Sunday 10am better?",
+       opts:[["Sunday 10am",{"Next step":"Site visits · Sun 10am"},18],["Send more options first",{"Next step":"More listings · follow-up"},8]]},
+      {agent:"Confirmed ✅ Our agent will meet you there and will call you in the morning. I'll send the location pins an hour before.",final:true}
+    ]},
+  coaching:{label:"Coaching institute",biz:"Pinnacle Classes",av:"P",
+    fields:["Student","Course","Class / level","Batch pref.","Decision maker","Next step"],
+    steps:[
+      {agent:"Hello! Welcome to Pinnacle Classes 📚 Which course are you enquiring about?",
+       opts:[["JEE Main + Advanced",{Course:"JEE (Main + Adv)"},20],["NEET",{Course:"NEET"},20],["Class 10 Maths & Science",{Course:"Class 10 boards"},14]]},
+      {agent:"Great choice. Which class is the student in right now?",
+       opts:[["Class 11",{"Class / level":"Class 11"},14],["Dropper (12th passed)",{"Class / level":"Repeater"},16]]},
+      {agent:"Thanks! We have morning, evening and weekend batches. Which suits you best?",
+       opts:[["Evening, after school",{"Batch pref.":"Evening"},12],["Weekend only",{"Batch pref.":"Weekend"},10]]},
+      {agent:"May I know the student's name, and am I speaking with a parent or the student?",
+       opts:[["I'm the parent, my son is Arjun",{Student:"Arjun","Decision maker":"Parent ✓"},26],["I'm the student, Isha",{Student:"Isha","Decision maker":"Student (parent TBC)"},10]]},
+      {agent:"Thank you! Here's the fee structure and this year's results 📎\n\nWe run a free demo class every Saturday. Shall I book this Saturday 4pm for Arjun?",
+       opts:[["Yes, book it",{"Next step":"Demo class · Sat 4pm"},22],["What's the fee for the full year?",{"Next step":"Fee call · counsellor"},12]]},
+      {agent:"Booked ✅ You'll get a reminder on Friday evening. Our counsellor will also call to answer any fee questions.",final:true}
+    ]},
+  maker:{label:"Manufacturer / dealer",biz:"Navrang Industrial Supplies",av:"N",
+    fields:["Buyer","Product","Quantity","Buyer type","Location","Next step"],
+    steps:[
+      {agent:"Hello, thanks for contacting Navrang Industrial Supplies. Which product are you enquiring about?",
+       opts:[["Submersible pump spares",{Product:"Pump spares"},18],["Booster pumps",{Product:"Booster pumps"},18]]},
+      {agent:"Sure. Are you buying for your own use, or are you a dealer or service centre?",
+       opts:[["Dealer, I run a pump shop",{"Buyer type":"Dealer ✓"},24],["Own use, need 1 piece",{"Buyer type":"End user"},8]]},
+      {agent:"Thanks. What quantity, and which models or series do you need?",
+       opts:[["40 sets, mixed 4 and 8 series",{Quantity:"40 sets · 4 & 8 series"},24],["5–10 pieces to start",{Quantity:"5–10 pcs"},12]]},
+      {agent:"Noted. May I have your name and city for delivery charges?",
+       opts:[["Rakesh, Rajkot",{Buyer:"Rakesh",Location:"Rajkot"},12],["Suresh, Indore",{Buyer:"Suresh",Location:"Indore"},10]]},
+      {agent:"Here's our dealer price list and catalogue 📎 Dealer_Pricelist.pdf\n\nFor 40 sets, our sales head can share a special rate. Shall he call you today?",
+       opts:[["Yes, call after 5pm",{"Next step":"Sales call · today 5pm"},22],["Send quotation on WhatsApp",{"Next step":"Quotation · within 2h"},16]]},
+      {agent:"Done ✅ I've passed your requirement to our sales head along with your quantity and models, so you won't need to repeat anything.",final:true}
+    ]}
+};
+const FU=[["+1 day","If they go quiet: \"Did you get a chance to see the options?\""],["+3 days","Shares a relevant case study or new listing"],["+7 days","Final check-in, then marks the lead closed-lost"],["Instant","Hot lead (score 70+) forwarded to you on WhatsApp"]];
+let cur="interior",step=0,score=0,state={},t0=0,timerTxt;
+const $=id=>document.getElementById(id);
+function now(){const d=new Date();return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0")}
+function chips(){$("chips").innerHTML="";Object.entries(V).forEach(([k,v])=>{const b=document.createElement("button");b.className="chip"+(k===cur?" on":"");b.textContent=v.label;b.onclick=()=>{cur=k;chips();reset()};$("chips").appendChild(b)})}
+function bubble(txt,me,sys){const m=document.createElement("div");m.className="m"+(me?" me":"")+(sys?" sys":"");m.textContent=txt;if(!sys){const t=document.createElement("time");t.textContent=now()+(me?" ✓✓":"");m.appendChild(t)}$("msgs").appendChild(m);$("msgs").scrollTop=1e6}
+function renderFields(){const v=V[cur];$("fields").innerHTML=v.fields.map(f=>`<div class="f ${state[f]?"set":""}"><span>${f}</span><div>${state[f]||"—"}</div></div>`).join("");const s=Math.min(100,score);$("meter").style.width=s+"%";$("scoreTxt").textContent=s}
+function renderFU(on){$("fu").innerHTML=FU.map((f,i)=>`<li class="${on||(i===3&&score>=70)?"on":""}"><b>${f[0]}</b><span>${f[1]}</span></li>`).join("")}
+function agentSay(i){const s=V[cur].steps[i];$("replies").innerHTML="";const ty=document.createElement("div");ty.className="typing";ty.innerHTML="<span></span><span></span><span></span>";$("msgs").appendChild(ty);$("msgs").scrollTop=1e6;
+  const delay=900+Math.min(1600,s.agent.length*12);
+  setTimeout(()=>{ty.remove();bubble(s.agent);if(t0){const secs=Math.max(3,Math.round((performance.now()-t0)/1000*4));$("timer").textContent="replied in "+secs+"s"}
+    if(s.final){finish();return}
+    const l=document.createElement("div");l.className="lbl";l.textContent="You are the customer. Tap a reply:";$("replies").appendChild(l);
+    s.opts.forEach(([txt,upd,pts])=>{const b=document.createElement("button");b.className="rbtn";b.textContent=txt;b.onclick=()=>{bubble(txt,true);Object.assign(state,upd);score+=pts;renderFields();renderFU(false);t0=performance.now();step++;agentSay(step)};$("replies").appendChild(b)})
+  },delay)}
+function finish(){renderFU(true);const v=V[cur];const hot=score>=70;
+  const lines=v.fields.filter(f=>state[f]).map(f=>`• ${f}: ${state[f]}`).join("\n");
+  $("owner").classList.remove("empty");
+  $("owner").textContent=`LeadReply · ${v.biz}\nToday: 14 new leads · 9 qualified · 4 visits booked\n\n${hot?"🔥 HOT LEAD":"New lead"} (score ${Math.min(100,score)})\n${lines}\n\nNo one on your team had to reply.`;
+  $("replies").innerHTML="";const r=document.createElement("button");r.className="restart";r.textContent="↺ Try another conversation";r.onclick=reset;$("replies").appendChild(r)}
+function reset(){const v=V[cur];step=0;score=0;state={};t0=0;$("msgs").innerHTML="";$("bizname").textContent=v.biz;$("avatar").textContent=v.av;$("timer").textContent="replied in —";
+  $("owner").classList.add("empty");$("owner").textContent="Finish the chat to see the summary the owner receives.";
+  renderFields();renderFU(false);bubble("Lead from Instagram ad · 11:07 pm",false,true);
+  setTimeout(()=>{bubble({interior:"Hi, saw your ad. Need interiors done",realestate:"Hi, interested in flats",coaching:"Hi, need details about your courses",maker:"Hello, need price list"}[cur],true);t0=performance.now();agentSay(0)},400)}
+$("copy").onclick=async()=>{try{await navigator.clipboard.writeText($("upi").textContent);$("copy").textContent="Copied"}catch(e){$("copy").textContent="Select & copy"}setTimeout(()=>$("copy").textContent="Copy",1800)};
+chips();reset();
+</script>
+</body>
+</html>
