@@ -160,8 +160,7 @@ footer{padding:20px 0 50px;color:var(--muted);font-size:13px;text-align:center}
       <div class="slots"><i></i><i></i><i></i><i></i><i></i></div>
       <div class="fine" style="margin-top:4px">Deposit counts toward setup. Full refund if your agent isn't live within 14 days.</div>
       <a class="cta" href="https://wa.me/916359160274?text=Hi%20Margil%2C%20I%20saw%20the%20LeadReply%20demo%20and%20want%20a%20pilot%20slot." target="_blank" rel="noopener">Book on WhatsApp: +91 63591 60274</a>
-      <div class="upi"><span>UPI</span><code id="upi">margilpatel57@okaxis</code><button id="copy">Copy</button></div>
-      <div class="fine">Pay the deposit by UPI, then send the screenshot on WhatsApp to confirm your slot.</div>
+      <div class="fine">Message on WhatsApp to see the agent working for your business and book your pilot slot.</div>
     </div>
   </section>
 
@@ -257,7 +256,6 @@ function reset(){const v=V[cur];step=0;score=0;state={};t0=0;$("msgs").innerHTML
   $("owner").classList.add("empty");$("owner").textContent="Finish the chat to see the summary the owner receives.";
   renderFields();renderFU(false);bubble("Lead from Instagram ad · 11:07 pm",false,true);
   setTimeout(()=>{bubble({interior:"Hi, saw your ad. Need interiors done",realestate:"Hi, interested in flats",coaching:"Hi, need details about your courses",maker:"Hello, need price list"}[cur],true);t0=performance.now();agentSay(0)},400)}
-$("copy").onclick=async()=>{try{await navigator.clipboard.writeText($("upi").textContent);$("copy").textContent="Copied"}catch(e){$("copy").textContent="Select & copy"}setTimeout(()=>$("copy").textContent="Copy",1800)};
 chips();reset();
 </script>
 </body>
